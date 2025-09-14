@@ -18,10 +18,10 @@ constexpr bool test_sswitch() {
                .case_(str, 2)
                .case_("fdsfsdf", 3)
                .case_("", 4)
-               .orDefault(0);
+               .or_default(0);
   static_assert(std::is_same_v<decltype(v), int>);
   error_if(v != 2);
-  i = ss::string_switch<int>(str).orDefault(-1);
+  i = ss::string_switch<int>(str).or_default(-1);
   error_if(i != -1);
 
   i = ss::string_switch<int>(str).case_(str, 0).cases(str, "hello", 1);
@@ -47,7 +47,7 @@ void test_sswitch_nontrivial() {
                .case_(str, expected)
                .case_("fdsfsdf", "v3")
                .case_("", "v4")
-               .orDefault("");
+               .or_default("");
   static_assert(std::is_same_v<decltype(v), std::string>);
   error_if(v != expected);
   std::string v2 = ss::string_switch<std::string_view, std::string>(str)
@@ -57,7 +57,7 @@ void test_sswitch_nontrivial() {
                        .case_("", "v4");
   error_if(v2 != expected);
 
-  i = ss::string_switch<std::string>(str).orDefault("abc");
+  i = ss::string_switch<std::string>(str).or_default("abc");
   error_if(i != str);
 
   i = ss::string_switch<std::string>(str).case_(str, "1").cases(str, "hello", "2");
@@ -74,7 +74,7 @@ void test_sswitch_nonmovable() {
   T x = ss::string_switch<T>("2")
             .case_("1", std::move(v1))
             .cases("2", "3", std::move(v2))
-            .orDefault(std::move(v3));
+            .or_default(std::move(v3));
   error_if(v2 != nullptr);
   error_if(!x || *x != 2);
   error_if(!v1 || !v3);
@@ -84,7 +84,7 @@ void test_sswitch_nonmovable() {
   x = ss::string_switch<T>("1")
           .case_("1", std::move(v1))
           .cases("2", "3", std::move(v2))
-          .orDefault(std::move(v3));
+          .or_default(std::move(v3));
   error_if(v1 != nullptr);
   error_if(!x || *x != 1);
   error_if(!v2 || !v3);
@@ -94,7 +94,7 @@ void test_sswitch_nonmovable() {
   x = ss::string_switch<T>("4")
           .case_("1", std::move(v1))
           .cases("2", "3", std::move(v2))
-          .orDefault(std::move(v3));
+          .or_default(std::move(v3));
   error_if(v3 != nullptr);
   error_if(!x || *x != 3);
   error_if(!v1 || !v2);
@@ -105,7 +105,7 @@ void test_sswitch_nonmovable() {
 template <typename Tpl1, typename Tpl2, size_t... Is>
 void test_unpack(Tpl1 t1, Tpl2 t2, std::index_sequence<Is...>, std::string_view str, int expected) {
   using sswitch = ss::string_switch<int>;
-  int x = (sswitch(str) | ... | sswitch::case_t{std::get<Is>(t1), std::get<Is>(t2)}).orDefault(-1);
+  int x = (sswitch(str) | ... | sswitch::case_t{std::get<Is>(t1), std::get<Is>(t2)}).or_default(-1);
   error_if(x != expected);
 }
 

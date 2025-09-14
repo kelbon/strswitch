@@ -25,7 +25,7 @@ Color string_switch_impl(std::string_view str) {
       .case_("yellow", Yellow)
       .case_("black", Black)
       .case_("white", White)
-      .orDefault(Unknown);
+      .or_default(Unknown);
 }
 
 Color unordered_map_impl(std::string_view str) {
