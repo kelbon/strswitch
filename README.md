@@ -12,7 +12,7 @@ Color parse_color(std::string_view str) {
         .case_("red", Color::Red)
         .case_("green", Color::Green)
         .case_("blue", Color::Blue)
-        .orDefault(Color::Unknown);
+        .or_default(Color::Unknown);
 }
 ...
 Color c = parse_color("green");  // Returns Color::Green

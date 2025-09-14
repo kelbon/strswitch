@@ -17,7 +17,7 @@ namespace ss {
 //               .case_("hello", 0)
 //               .case_("world", 1)
 //               .cases("abc", "cba", 5)
-//               .orDefault(-1);
+//               .or_default(-1);
 //
 // case accepts 'T' (T&& for non trivial types) but final result converted to 'R'
 template <typename T, typename R = T>
@@ -54,13 +54,13 @@ struct string_switch {
   }
 
  public:
-  [[nodiscard]] constexpr string_switch& endsWith(std::string_view s, value_t value) {
+  [[nodiscard]] constexpr string_switch& ends_with(std::string_view s, value_t value) {
     if (!m_result && m_str.ends_with(s))
       m_result = std::move(value);
     return *this;
   }
 
-  [[nodiscard]] constexpr string_switch& startsWith(std::string_view s, value_t value) {
+  [[nodiscard]] constexpr string_switch& starts_with(std::string_view s, value_t value) {
     if (!m_result && m_str.starts_with(s))
       m_result = std::move(value);
     return *this;
@@ -132,7 +132,7 @@ struct string_switch {
     return case_(p.key, (value_t)p.value);
   }
 
-  [[nodiscard]] constexpr R orDefault(value_t value) {
+  [[nodiscard]] constexpr R or_default(value_t value) {
     if (m_result) {
       return R(std::move(*m_result));
     }
