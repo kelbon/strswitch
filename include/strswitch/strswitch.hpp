@@ -139,6 +139,18 @@ struct string_switch {
     return R((value_t)value);
   }
 
+  [[nodiscard]] constexpr std::optional<R> or_nullopt() {
+    if (m_result)
+      return R(std::move(*m_result));
+    return std::nullopt;
+  }
+
+  [[nodiscard]] constexpr R or_throw(auto&& makeex) {
+    if (!m_result)
+      throw makeex();
+    return R(std::move(*m_result));
+  }
+
   [[nodiscard]] constexpr operator R() {
     assert(m_result && "Fell off the end of a string-switch");
     return R(std::move(*m_result));
