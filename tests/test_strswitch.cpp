@@ -109,10 +109,34 @@ void test_unpack(Tpl1 t1, Tpl2 t2, std::index_sequence<Is...>, std::string_view 
   error_if(x != expected);
 }
 
+void test_or_nullopt() {
+  std::string_view a = "abc";
+  std::optional<int> x = ss::string_switch<int>(a).case_("a", 0).case_("b", 1).or_nullopt();
+  error_if(!!x);
+  x = ss::string_switch<int>(a).case_("a", 0).case_("abc", 1).or_nullopt();
+  error_if(!x || *x != 1);
+}
+
+void test_or_throw() {
+  std::string_view a = "abc";
+  try {
+    int x = ss::string_switch<int>(a).case_("a", 0).case_("b", 1).or_throw(
+        [] { return std::runtime_error("mda"); });
+    error_if(true);
+  } catch (std::runtime_error& e) {
+    error_if(e.what() != std::string_view("mda"));
+  }
+  int x = ss::string_switch<int>(a).case_("a", 0).case_("abc", 1).or_throw(
+      [] { return std::runtime_error("mda"); });
+  error_if(x != 1);
+}
+
 int main() try {
   static_assert(test_sswitch());
   test_sswitch_nontrivial();
   test_sswitch_nonmovable();
+  test_or_nullopt();
+  test_or_throw();
 #define TEST_UNPACK(STR, EXPECTED)                                                                        \
   test_unpack(std::tuple("a", "b", "cec", "abba"), std::tuple(1, 2, 3, 4), std::make_index_sequence<4>{}, \
               STR, EXPECTED)
